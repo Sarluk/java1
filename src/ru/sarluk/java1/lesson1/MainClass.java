@@ -18,7 +18,7 @@ public class MainClass {
 
 
         //Какие-то вычисления
-        System.out.println(calculate(2, 2, 12, 4));
+        System.out.println(calculate(2, 2, 12, 0));
 
         //Проверка на диапазон числа 10 - 20
         System.out.println(checkSumm(10,20));
@@ -31,8 +31,13 @@ public class MainClass {
         System.out.println("1200: "+leap(1200));
     }
 
-    private static int calculate(int a, int b, int c, int d){
-        return a * (b + (c / d));
+    private static String calculate(int a, int b, int c, int d) {
+        if (d != 0) {
+            return String.valueOf(a * (b + (c / d)));
+        } else {
+            return "На 0 делить нельзя";
+        }
+
     }
 
     private static boolean checkSumm(int a, int b){
