@@ -8,7 +8,7 @@ import java.util.Scanner;
  * Дата создания: 14.05.2016.
  */
 public class MainClass {
-    private static final int SIZE = 5;
+    private static final int SIZE = 3;
     private static final int OTHER_OPTION = 4;
     private static char[][] field = new char[SIZE][SIZE];
     private static final char emptyDot = '*';
@@ -20,20 +20,25 @@ public class MainClass {
         init();
         printField();
 
+
         while (true) {
             playerGo();
-            if(isCheckWin(playerDot, OTHER_OPTION)){
+
+            if (isCheckWin(playerDot, OTHER_OPTION)) {
                 System.out.println("Победил человек!");
                 break;
             }
-            if(!isFieldFull()){
+            if (!isFieldFull()) {
                 System.out.println("Ничья");
                 init();
+                printField();
                 playerGo();
             }
-
-            printField();
-            //aiGo();
+            aiGo();
+            if (isCheckWin(aiDot, OTHER_OPTION)) {
+                System.out.println("Победил компьютер!");
+                break;
+            }
         }
 
     }
@@ -43,35 +48,109 @@ public class MainClass {
         int counterY = 0;
         int counterXY = 0;
         int counterYX = 0;
-        int counter = SIZE - 1;
 
+
+        //Горизонталь
         for (int i = 0; i < SIZE; i++) {
             for (int j = 0; j < SIZE; j++) {
-                if(field[i][j] == dot) counterX++;
-                if(field[j][i] == dot) counterY++;
-                //if(field[i][j] == dot && i == j) counterXY++;
-                if(field[i][j] == dot && (counter - i == j)) counterYX++;
-
-
-
-
-
-                //if(counterX == SIZE || counterX == otherOption) return true;
-                //if(counterY == SIZE || counterY == otherOption) return true;
-
+                if (field[i][j] == dot) {
+                    if (counterX == 0) {
+                        counterX++;
+                    } else if (field[i][j - 1] == dot) {
+                        counterX++;
+                    } else {
+                        counterX = 0;
+                    }
+                }
+                if (counterX == SIZE || counterX == otherOption) return true;
             }
+            counterX = 0;
+        }
 
-            //if(counterXY == SIZE) return true;
-            //System.out.println("counterXY: " + counterXY );
-            //System.out.println("counterX: " + counterX);
-            //System.out.println("counterY: " + counterY);
-            System.out.println("---counterYX: " + counterYX );
+        //Вертикаль
+        for (int j = 0; j < SIZE; j++) {
+            for (int i = 0; i < SIZE; i++) {
+                if (field[i][j] == dot) {
+                    if (counterY == 0) {
+                        counterY++;
+                    } else if (field[i - 1][j] == dot) {
+                        counterY++;
+                    } else {
+                        counterY = 0;
+                    }
+                }
+                if (counterY == SIZE || counterY == otherOption) return true;
+            }
+            counterY = 0;
+        }
 
-            //counterX = 0;
-            //counterY = 0;
-            //if(i == SIZE) counterXY = 0;
-            if(i == SIZE) counterYX = 0;
+        //Диагональ
+        for (int i = 0; i < SIZE; i++) {
+            for (int j = 0; j < SIZE - i; j++) {
+                if (field[i + j][j] == dot) {
+                    if (counterXY == 0) {
+                        counterXY++;
+                    } else if (field[i + j - 1][j - 1] == dot) {
+                        counterXY++;
+                    } else {
+                        counterXY = 0;
+                    }
+                }
+                if (counterXY == SIZE || counterXY == otherOption) return true;
+            }
+            counterXY = 0;
+        }
+        //Диагональ
+        for (int j = 0; j < SIZE; j++) {
+            for (int i = 0; i < SIZE - j; i++) {
+                if (field[i][i + j] == dot) {
+                    if (counterXY == 0) {
+                        counterXY++;
+                    } else if (field[i - 1][i + j - 1] == dot) {
+                        counterXY++;
+                    } else {
+                        counterXY = 0;
+                    }
+                }
+                if (counterXY == SIZE || counterXY == otherOption) return true;
+            }
+            counterXY = 0;
+        }
 
+
+        //Обратная диагональ
+        for (int i = 0; i < SIZE; i++) {
+            for (int j = 0; j <= i; j++) {
+                if (field[i - j][j] == dot) {
+                    if (counterYX == 0) {
+                        counterYX++;
+                    } else if (field[i - j + 1][j - 1] == dot) {
+                        counterYX++;
+                    } else {
+                        counterYX = 0;
+                    }
+                }
+                if (counterYX == SIZE || counterYX == otherOption) return true;
+            }
+            counterYX = 0;
+        }
+
+
+        //Обратная диагональ
+        for (int j = 0; j < SIZE; j++) {
+            for (int i = 0; i < SIZE - j; i++) {
+                if (field[SIZE - 1 - i][i + j] == dot) {
+                    if (counterYX == 0) {
+                        counterYX++;
+                    } else if (field[SIZE - 1 - i + 1][i + j - 1] == dot) {
+                        counterYX++;
+                    } else {
+                        counterYX = 0;
+                    }
+                }
+                if (counterYX == SIZE || counterYX == otherOption) return true;
+            }
+            counterYX = 0;
         }
         return false;
     }
@@ -79,7 +158,7 @@ public class MainClass {
     private static boolean isFieldFull() {
         for (int i = 0; i < SIZE; i++) {
             for (int j = 0; j < SIZE; j++) {
-                if(field[i][j] == emptyDot) return true;
+                if (field[i][j] == emptyDot) return true;
             }
         }
         return false;
@@ -99,7 +178,7 @@ public class MainClass {
     private static void playerGo() {
         int x, y;
         do {
-            System.out.println("Введите координаты в формате X Y (1-3)");
+            System.out.println("Введите координаты в формате X Y (1-" + SIZE + ")");
             x = sc.nextInt() - 1;
             y = sc.nextInt() - 1;
         } while (!isEmptyDot(x, y));
